@@ -23,11 +23,11 @@ def sum_text_data(input_dir, ext="**/*.txt", split_pattern=r"[\n]{2, }"):
     return paragraphs
 
 if __name__ == "__main__":
-    config = json.load(open("../.json", "r"))
+    config = json.load(open("../.json", "r", encoding="utf-8"))
     data_dir   = config["data_dir"]
-    output_dir = config["dataset_dir"]
+    output_path = config["dataset_path"]
 
     text  = sum_text_data(data_dir)
 
-    with open(output_dir, "w", encoding='utf-8', errors='ignore') as f:
+    with open(output_path, "w", encoding='utf-8', errors='ignore') as f:
         f.write('\n\n'.join(text))
