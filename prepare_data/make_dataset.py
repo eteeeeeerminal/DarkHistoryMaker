@@ -25,7 +25,7 @@ def sum_text_data(input_dir, ext="**/*.txt", split_pattern=r"[\n]{2, }"):
 if __name__ == "__main__":
     config = json.load(open("../.json", "r"))
     data_dir   = config["data_dir"]
-    output_dir = config["output_dir"]
+    output_dir = config["dataset_dir"]
 
     text  = sum_text_data(data_dir)
 
