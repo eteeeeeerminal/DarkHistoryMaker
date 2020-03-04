@@ -1,0 +1,8 @@
+{
+    "data_path" : "../dataset/data.txt",
+    "vocab_path" : "../dataset/vocab.txt",
+
+    "input_length" : 128,
+    "max_seq_length" : 126,
+    "is_return_str" : false
+}

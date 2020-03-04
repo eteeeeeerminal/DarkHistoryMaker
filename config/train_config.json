@@ -1,0 +1,6 @@
+{
+    "save_path" : "../model/",
+    "trained_model" : "",
+
+    "learning_rate" : 0
+}

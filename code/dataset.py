@@ -25,9 +25,9 @@ class TextDatasetConfig:
         self.is_return_str = kwargs.pop("is_return_str", False)
 
     @staticmethod
-    def from_json(path:str) -> TextDatasetConfig:
+    def from_json(path:str):
         kwargs = json.load(open(path, 'r', encoding='utf-8', errors='ignore'))
-        return TextDatasetConfig(kwargs)
+        return TextDatasetConfig(**kwargs)
 
 class DarkHistoryDataset(torch.utils.data.Dataset):
     def __init__(self, config:TextDatasetConfig):
@@ -41,7 +41,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         self.load_vocab(config.vocab_path)
 
         self.data_len = 0
-        self.plain_doc = []
+        self.plain_docs = []
         self.docs = []
         self.load_data(config.data_path)
 
@@ -57,11 +57,13 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
             text = f.read().split("\n\n")
 
         for block in text:
-            block = block.rsplit('\n')
+            block = block.rstrip('\n')
             if not block:
                 continue
 
-            if block > self.max_seq_length:
+            if len(block) > self.max_seq_length:
+                # はみ出す文が多かったら、読点で区切って、ずらして読み込む
+                # 1 block を分割読み込み
                 continue
 
             self.plain_docs.append(block)
@@ -85,12 +87,13 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
     def ids_to_sent(self, ids:List[int]) -> List[str]:
         return [self.vocab_ids[word_id] for word_id in ids if 0 <= word_id < self.vocab_size]
 
-    def make_input(self, ids:list[int]) -> torch.Tensor: # [self.max_seq_length]
+    def make_input(self, ids:List[int]) -> torch.Tensor:
 
         input_ids = [self.cls_id] + ids + [self.sep_id]
         seq_length  = len(input_ids)
 
         input_ids.extend(self.padding[seq_length:])
+        # [self.max_seq_length]
         return torch.tensor(input_ids)
 
     def get_vocab_size(self) -> int:

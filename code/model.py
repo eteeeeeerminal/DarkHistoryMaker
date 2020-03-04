@@ -4,28 +4,34 @@ import torch
 from torch.nn import CrossEntropyLoss
 
 from reformer_pytorch import ReformerLM
-from typing import Tupple
+from typing import Tuple, List
 
 class ReformerGenConfig:
     def __init__(self, **kwargs):
         self.vocab_size = kwargs.pop("vocab_size", 20000)
         self.hidden_size = kwargs.pop("hidden_size", 768)
+        self.depth = kwargs.pop("depth", 12)
 
-        self.max_position_embeddings = kwargs.pop("max_position_embeddings", 4096)
+        self.max_position_embeddings = kwargs.pop("max_position_embeddings", 128)
 
     @staticmethod
-    def from_json(path:str) -> ReformerGenConfig:
+    def from_json(path:str):
         kwargs = json.load(open(path, 'r', encoding='utf-8', errors='ignore'))
-        return ReformerGenConfig(kwargs)
+        return ReformerGenConfig(**kwargs)
 
-class ReformerGenModel(nn.Module):
+class ReformerGenModel(torch.nn.Module):
     def __init__(self, config:ReformerGenConfig):
+        super().__init__()
         self.reformer = ReformerLM(
             num_tokens = config.vocab_size,
             dim = config.hidden_size,
-
+            depth = config.depth,
             max_seq_len = config.max_position_embeddings
         )
+
+    @staticmethod
+    def from_pretrained():
+        pass
 
     def random_generate(self) -> str:
         pass
@@ -37,7 +43,7 @@ class ReformerGenModel(nn.Module):
         self,
         input_ids,
         lm_labels=None
-    ) -> Tupple:
+    ) -> Tuple:
 
         output = self.reformer(
             input_ids
@@ -49,7 +55,7 @@ class ReformerGenModel(nn.Module):
             output = output[:, :-1, :].contiguous()
             lm_labels = lm_labels[:, 1:].contiguous()
             loss_fct = CrossEntropyLoss()
-            lm_loss = loss_fct()
+            lm_loss = loss_fct(output.view(-1, output.size(-1)), lm_labels.view(-1))
 
             outputs = (lm_loss,) + outputs
 
