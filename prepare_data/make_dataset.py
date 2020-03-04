@@ -3,11 +3,13 @@ from pathlib import Path
 import re
 import chardet
 
-def sum_text_data(input_dir, ext="**/*.txt", split_pattern=r"[\n]{2, }"):
+def sum_text_data(  input_dir, ext="**/*.txt",
+                    split_pattern=r"[\n]{2, }", del_pattern=r"[\t\n]"):
     p = Path(input_dir)
     file_list = p.glob(ext)
 
     split_pattern = re.compile(split_pattern)
+    del_pattern   = re.compile(del_pattern)
 
     paragraphs = []
     for file_path in file_list:
@@ -17,6 +19,7 @@ def sum_text_data(input_dir, ext="**/*.txt", split_pattern=r"[\n]{2, }"):
         with open(file_path, 'r', encoding=encode, errors='ignore') as f:
             text = split_pattern.split(f.read())
             for prgrph in text:
+                text = del_pattern.sub("", prgrph)
                 if len(prgrph) >= 3:
                     paragraphs.append(prgrph)
 
