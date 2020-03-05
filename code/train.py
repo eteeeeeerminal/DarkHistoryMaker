@@ -96,7 +96,7 @@ class Trainer:
 
     def train(self):
         if self.config.n_gpu > 1:
-            self.model = torch.nn.DataParallel(model)
+            self.model = torch.nn.DataParallel(self.model, device_ids = self.config.use_device_id)
 
         global_step = 0
         tr_loss, logging_loss = 0.0, 0.0
