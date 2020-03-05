@@ -25,7 +25,7 @@ class TrainerConfig:
         self.seed = kwargs.pop("seed", 17)
 
         self.n_gpu = kwargs.pop("n_gpu", 1)
-        self.use_device_id.pop("use_device_id", [0])
+        self.use_device_id = kwargs.pop("use_device_id", [0])
 
         self.epoch = kwargs.pop("epoch", 10)
         self.batch_size = kwargs.pop("batch_size", 8)
