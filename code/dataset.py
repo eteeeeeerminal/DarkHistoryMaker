@@ -43,7 +43,8 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         self.data_len = 0
         self.plain_docs = []
         self.docs = []
-        self.load_data(config.data_path)
+        if config.data_path is not None:
+            self.load_data(config.data_path)
 
         self.cls_id = self.vocab["[CLS]"]
         self.sep_id = self.vocab["[SEP]"]
