@@ -49,6 +49,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         self.cls_id = self.vocab["[CLS]"]
         self.sep_id = self.vocab["[SEP]"]
         self.pad_id = self.vocab["[PAD]"]
+        self.unk_id = self.vocab["[UNK]"]
 
         self.padding = [self.pad_id] * self.block_size
 
@@ -83,7 +84,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         return self.vocab_size
 
     def sent_to_ids(self, sent:str) -> List[int]:
-        return [self.vocab[char] for char in sent if not (char == '\n' or char == '\t')]
+        return [self.vocab.get(char, self.unk_id) for char in sent if not (char == '\n' or char == '\t')]
 
     def ids_to_sent(self, ids:List[int]) -> List[str]:
         return [self.vocab_ids[word_id] for word_id in ids if 0 <= word_id < self.vocab_size]
