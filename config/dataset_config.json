@@ -2,7 +2,7 @@
     "data_path" : "../dataset/data.txt",
     "vocab_path" : "../dataset/vocab.txt",
 
-    "input_length" : 128,
-    "max_seq_length" : 126,
+    "input_length" : 256,
+    "max_seq_length" : 254,
     "is_return_str" : false
 }
