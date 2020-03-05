@@ -40,16 +40,16 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         self.vocab_size = 0
         self.load_vocab(config.vocab_path)
 
+        self.cls_id = self.vocab["[CLS]"]
+        self.sep_id = self.vocab["[SEP]"]
+        self.pad_id = self.vocab["[PAD]"]
+        self.unk_id = self.vocab["[UNK]"]
+
         self.data_len = 0
         self.plain_docs = []
         self.docs = []
         if config.data_path is not None:
             self.load_data(config.data_path)
-
-        self.cls_id = self.vocab["[CLS]"]
-        self.sep_id = self.vocab["[SEP]"]
-        self.pad_id = self.vocab["[PAD]"]
-        self.unk_id = self.vocab["[UNK]"]
 
         self.padding = [self.pad_id] * self.block_size
 
