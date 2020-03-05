@@ -93,8 +93,6 @@ class Trainer:
     def logging(self, step, loss):
         logger.info(f"step : {step}")
         logger.info(f"loss : {loss/self.config.logging_step}")
-        print(f"step : {step}")
-        print(f"loss : {loss/self.config.logging_step}")
 
     def train(self):
         if self.config.n_gpu > 1:
