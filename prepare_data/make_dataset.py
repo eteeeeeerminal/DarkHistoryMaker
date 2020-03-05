@@ -4,7 +4,7 @@ import re
 import chardet
 
 def sum_text_data(  input_dir, ext="**/*.txt",
-                    split_pattern=r"[\n]{2, }", del_pattern=r"[\t\n]"):
+                    split_pattern=r"[\n。]+", del_pattern=r"[\t\n 　]"):
     p = Path(input_dir)
     file_list = p.glob(ext)
 
@@ -19,8 +19,8 @@ def sum_text_data(  input_dir, ext="**/*.txt",
         with open(file_path, 'r', encoding=encode, errors='ignore') as f:
             text = split_pattern.split(f.read())
             for prgrph in text:
-                text = del_pattern.sub("", prgrph)
-                if len(prgrph) >= 3:
+                prgrph = del_pattern.sub("", prgrph)
+                if len(prgrph) >= 5:
                     paragraphs.append(prgrph)
 
     return paragraphs
