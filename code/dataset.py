@@ -62,14 +62,13 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
                 continue
 
             if len(block) > self.max_seq_length:
-                # はみ出す文が多かったら、読点で区切って、ずらして読み込む
-                # 1 block を分割読み込み
                 continue
 
             self.plain_docs.append(block)
             self.docs.append(self.sent_to_ids(block))
 
         self.data_len = len(self.docs)
+        return self.data_len
 
     def load_vocab(self, vocab_path:str):
         with open(vocab_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -80,6 +79,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
             self.vocab_ids.append(word)
 
         self.vocab_size = len(self.vocab)
+        return self.vocab_size
 
     def sent_to_ids(self, sent:str) -> List[int]:
         return [self.vocab[char] for char in sent if not (char == '\n' or char == '\t')]
