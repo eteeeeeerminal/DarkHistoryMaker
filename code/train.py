@@ -25,8 +25,12 @@ class TrainerConfig:
         self.seed = kwargs.pop("seed", 17)
 
         self.n_gpu = kwargs.pop("n_gpu", 1)
+        self.use_device_id.pop("use_device_id", [0])
+
         self.epoch = kwargs.pop("epoch", 10)
         self.batch_size = kwargs.pop("batch_size", 8)
+        if self.n_gpu > 1:
+            self.batch_size *= self.n_gpu
 
         self.learning_rate = kwargs.pop("learning_rate", 0.001)
         self.max_grad_norm = kwargs.pop("max_grad_norm", 1.0)
@@ -47,7 +51,7 @@ class Trainer:
         self.config = config
 
         self.set_seed(config.seed)
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(f"cuda:{self.config.use_device_id[0]}" if torch.cuda.is_available() else "cpu")
 
         dataset_config = TextDatasetConfig.from_json(dataset_config_path)
         self.dataset = DarkHistoryDataset(dataset_config)
@@ -91,6 +95,8 @@ class Trainer:
         logger.info(f"loss : {loss/self.config.logging_step}")
 
     def train(self):
+        if self.config.n_gpu > 1:
+            self.model = torch.nn.DataParallel(model)
 
         global_step = 0
         tr_loss, logging_loss = 0.0, 0.0
@@ -105,6 +111,9 @@ class Trainer:
                     inputs = batch["input_ids"].to(self.device)
 
                     loss = self.model(inputs, lm_labels=inputs)[0]
+
+                    if self.config.n_gpu > 1:
+                        loss = loss.mean()
 
                     loss.backward()
                     tr_loss += loss.item()
