@@ -9,7 +9,7 @@ from torch.optim import AdamW
 from dataset import TextDatasetConfig, DarkHistoryDataset
 from model import ReformerGenConfig, ReformerGenModel
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, filename="0305.log")
 logger = logging.getLogger(__name__)
 
 class TrainerConfig:
