@@ -1,4 +1,4 @@
 .json
 .vscode
 dataset/data.txt
-.pyc
+*.pyc
