@@ -106,6 +106,7 @@ class Trainer:
 
         logger.info("---- START TRAINING ----")
         for i in range(self.config.epoch):
+            logger.info(f"Start epoch:{i}")
             for batch in self.train_dataloader:
                 try:
                     inputs = batch["input_ids"].to(self.device)
