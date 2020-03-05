@@ -21,20 +21,20 @@ class ReformerGenConfig:
 
 class ReformerGenModel(torch.nn.Module):
     def __init__(self, config:ReformerGenConfig):
+        self.config = config
         super().__init__()
         self.reformer = ReformerLM(
-            num_tokens = config.vocab_size,
-            dim = config.hidden_size,
-            depth = config.depth,
-            max_seq_len = config.max_position_embeddings
+            num_tokens = self.config.vocab_size,
+            dim = self.config.hidden_size,
+            depth = self.config.depth,
+            max_seq_len = self.config.max_position_embeddings
         )
 
     @staticmethod
-    def from_pretrained():
-        pass
-
-    def random_generate(self) -> str:
-        pass
+    def from_pretrained(model_path, config:ReformerGenConfig):
+        model = ReformerGenModel(config)
+        model.load_state_dict(torch.load(model_path))
+        return model
 
     def generate(self, sent:torch.Tensor) -> List[int]:
         pass
