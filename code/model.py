@@ -9,8 +9,8 @@ from typing import Tuple, List
 class ReformerGenConfig:
     def __init__(self, **kwargs):
         self.vocab_size = kwargs.pop("vocab_size", 20000)
-        self.hidden_size = kwargs.pop("hidden_size", 768)
-        self.emb_dim = kwargs.pop("emb_dim", 128)
+        self.hidden_size = kwargs.pop("hidden_size", 512)
+        self.emb_dim = kwargs.pop("emb_dim", 512)
         self.depth = kwargs.pop("depth", 12)
 
         self.causal  = kwargs.pop("causal ", True)
