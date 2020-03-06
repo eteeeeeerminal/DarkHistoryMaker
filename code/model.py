@@ -64,12 +64,14 @@ class ReformerGenModel(torch.nn.Module):
         self,
         input_ids,
         input_mask=None,
+        input_attn_mask=None,
         lm_labels=None
     ) -> Tuple:
 
         output = self.reformer(
             input_ids,
-            input_mask=input_mask
+            input_mask=input_mask,
+            input_attn_mask=input_attn_mask
         )
 
         outputs = output,

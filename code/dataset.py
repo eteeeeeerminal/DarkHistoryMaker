@@ -91,7 +91,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         return [self.vocab_ids[word_id] for word_id in ids if 0 <= word_id < self.vocab_size]
 
     def make_input(self, ids:List[int]) -> torch.Tensor:
-        input_mask = [False] + [True]*len(ids) + [False]
+        input_mask = [0] + [1]*len(ids) + [0]
 
         input_ids = [self.cls_id] + ids + [self.sep_id]
         seq_length  = len(input_ids)
