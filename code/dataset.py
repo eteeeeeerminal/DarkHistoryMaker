@@ -91,13 +91,14 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         return [self.vocab_ids[word_id] for word_id in ids if 0 <= word_id < self.vocab_size]
 
     def make_input(self, ids:List[int]) -> torch.Tensor:
+        input_mask = [0] + [1]*len(ids) + [0]
 
         input_ids = [self.cls_id] + ids + [self.sep_id]
         seq_length  = len(input_ids)
 
         input_ids.extend(self.padding[seq_length:])
         # [self.max_seq_length]
-        return torch.tensor(input_ids)
+        return torch.tensor(input_ids), torch.tensor(input_mask)
 
     def get_vocab_size(self) -> int:
         return self.vocab_size
@@ -108,9 +109,10 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
     def __getitem__(self, index:int) -> Dict:
         ids = self.docs[index]
 
-        input_ids = self.make_input(ids)
+        input_ids, input_mask = self.make_input(ids)
 
-        output = { "input_ids" : input_ids}
+        output = {  "input_ids"  : input_ids, 
+                    "input_mask" : input_mask, }
 
         if self.is_return_str:
             output["plain_text"] = self.plain_docs[index]

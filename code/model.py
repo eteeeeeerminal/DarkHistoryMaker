@@ -55,17 +55,21 @@ class ReformerGenModel(torch.nn.Module):
             output = self.forward(sent_ids)[0]
             output = output.argmax(dim=-1)
             sent_ids = torch.cat((sent_ids[:, :i], output[:, i-1:i]), 1)
+            if output[0, i-1:i] == eos_id:
+                break
 
         return list(sent_ids)
 
     def forward(
         self,
         input_ids,
+        input_mask=None,
         lm_labels=None
     ) -> Tuple:
 
         output = self.reformer(
-            input_ids
+            input_ids,
+            input_mask=input_mask
         )
 
         outputs = output,

@@ -87,7 +87,7 @@ class Trainer:
         if self.config.n_gpu > 0:
             torch.cuda.manual_seed_all(seed)
 
-    def random_generate(self, sent_num=1) -> List[str]:
+    def random_generate(self, sent_num=5) -> List[str]:
         self.model.eval()
         generated_sents = []
         for i in range(sent_num):
@@ -95,9 +95,9 @@ class Trainer:
             sent_ids = [self.dataset.cls_id, start_char]
             sent_ids = torch.tensor(sent_ids).to(self.device)
             sent = self.model.generate(sent_ids, self.dataset.sep_id)[0]
+            logger.info(f"generate:{sent}")
             generated_sents.append(''.join(self.dataset.ids_to_sent(sent)))
 
-        print(generated_sents)
         return generated_sents
 
     def save_model(self, step):
@@ -131,8 +131,9 @@ class Trainer:
             for batch in self.train_dataloader:
                 try:
                     inputs = batch["input_ids"].to(self.device)
+                    mask = batch["input_mask"].to(self.device)
 
-                    loss = self.model(inputs, lm_labels=inputs)[0]
+                    loss = self.model(inputs, input_mask=mask, lm_labels=inputs)[0]
 
                     if self.config.n_gpu > 1:
                         loss = loss.mean()
@@ -155,7 +156,9 @@ class Trainer:
                     logging_loss = tr_loss
 
                 if self.config.save_step > 0 and global_step % self.config.save_step == 0:
+                    self.random_generate()
                     self.save_model(global_step)
+                    self.model.train()
 
         self.save_model(global_step)
 
