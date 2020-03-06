@@ -98,7 +98,6 @@ class Trainer:
             logger.info(f"generate:{sent}")
             generated_sents.append(''.join(self.dataset.ids_to_sent(sent)))
 
-        print(generated_sents)
         return generated_sents
 
     def save_model(self, step):
@@ -155,11 +154,11 @@ class Trainer:
                 if self.config.logging_step > 0 and global_step % self.config.logging_step == 0:
                     self.logging(global_step, tr_loss-logging_loss)
                     logging_loss = tr_loss
-                    self.random_generate()
-                    self.model.train()
 
                 if self.config.save_step > 0 and global_step % self.config.save_step == 0:
                     self.save_model(global_step)
+                    self.random_generate()
+                    self.model.train()
 
         self.save_model(global_step)
 
@@ -167,4 +166,4 @@ class Trainer:
 if __name__ == "__main__":
     config  = TrainerConfig.from_json("../config/train_config.json")
     trainer = Trainer(config)
-    trainer.random_generate()
+    trainer.train()
