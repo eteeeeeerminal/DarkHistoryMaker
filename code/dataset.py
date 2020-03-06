@@ -96,7 +96,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         input_ids = [self.cls_id] + ids + [self.sep_id]
         seq_length  = len(input_ids)
 
-        input_ids.extend(self.padding[seq_length:])
+        input_ids.extend(self.padding[seq_length:]), input_mask.extend(self.padding[seq_length:])
         # [self.max_seq_length]
         return torch.tensor(input_ids), torch.tensor(input_mask)
 
