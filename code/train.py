@@ -154,11 +154,11 @@ class Trainer:
                 if self.config.logging_step > 0 and global_step % self.config.logging_step == 0:
                     self.logging(global_step, tr_loss-logging_loss)
                     logging_loss = tr_loss
+                    self.save_model(global_step)
+                    self.model.train()
 
                 if self.config.save_step > 0 and global_step % self.config.save_step == 0:
                     self.random_generate()
-                    self.save_model(global_step)
-                    self.model.train()
 
         self.save_model(global_step)
 
