@@ -133,7 +133,7 @@ class Trainer:
                     inputs = batch["input_ids"].to(self.device)
                     mask = batch["input_mask"].to(self.device)
 
-                    loss = self.model(inputs, input_attn_mask=mask, lm_labels=inputs)[0]
+                    loss = self.model(inputs, input_mask=mask, lm_labels=inputs)[0]
 
                     if self.config.n_gpu > 1:
                         loss = loss.mean()
