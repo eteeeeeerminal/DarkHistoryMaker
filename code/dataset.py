@@ -98,7 +98,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
 
         input_ids.extend(self.padding[seq_length:]), input_mask.extend(self.padding[seq_length:])
         # [self.max_seq_length]
-        return torch.tensor(input_ids), torch.tensor(input_mask)
+        return torch.tensor(input_ids), torch.tensor(input_mask, dtype=torch.long)
 
     def get_vocab_size(self) -> int:
         return self.vocab_size
