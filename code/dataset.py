@@ -44,6 +44,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         self.sep_id = self.vocab["[SEP]"]
         self.pad_id = self.vocab["[PAD]"]
         self.unk_id = self.vocab["[UNK]"]
+        self.mask_id = self.vocab["[MASK]"]
 
         self.data_len = 0
         self.plain_docs = []
