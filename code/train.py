@@ -1,6 +1,8 @@
+import random
 import json
 import os
 import logging
+from typing import List
 
 import torch
 from torch.utils.data import DataLoader
@@ -18,6 +20,8 @@ class TrainerConfig:
         self.save_dir = kwargs.pop("save_dir", "../model/")
         self.save_model_name = kwargs.pop("save_model_name", "trained_model.bin")
         self.save_config_name = kwargs.pop("save_config_name", "config.bin")
+
+        self.trained_model_path = kwargs.pop("trained_model_path", None)
 
         self.logging_step = kwargs.pop("logging_step", 50)
         self.save_step = kwargs.pop("save_step", 10000)
@@ -66,7 +70,11 @@ class Trainer:
         model_config = ReformerGenConfig.from_json(model_config_path)
         model_config.vocab_size = self.dataset.get_vocab_size()
 
-        self.model = ReformerGenModel(model_config)
+        if self.config.trained_model_path is not None:
+            self.model = ReformerGenModel().from_pretrained(self.config.trained_model_path)
+        else:
+            self.model = ReformerGenModel(model_config)
+
         self.model.to(self.device)
 
         self.optimizer = AdamW(
@@ -78,6 +86,19 @@ class Trainer:
         torch.manual_seed(seed)
         if self.config.n_gpu > 0:
             torch.cuda.manual_seed_all(seed)
+
+    def random_generate(self, sent_num=1) -> List[str]:
+        self.model.eval()
+        generated_sents = []
+        for i in range(sent_num):
+            start_char = random.randrange(self.dataset.mask_id+1, self.dataset.get_vocab_size())
+            sent_ids = [self.dataset.cls_id, start_char]
+            sent_ids = torch.tensor(sent_ids).to(self.device)
+            sent = self.model.generate(sent_ids, self.dataset.sep_id)[0]
+            generated_sents.append(''.join(self.dataset.ids_to_sent(sent)))
+
+        print(generated_sents)
+        return generated_sents
 
     def save_model(self, step):
         save_dir = os.path.join(self.config.save_dir, 'checkpoint-{}'.format(step))
@@ -136,7 +157,7 @@ class Trainer:
                 if self.config.save_step > 0 and global_step % self.config.save_step == 0:
                     self.save_model(global_step)
 
-        self.save_model()
+        self.save_model(global_step)
 
 
 if __name__ == "__main__":
