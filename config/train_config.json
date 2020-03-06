@@ -1,6 +1,5 @@
 {
     "save_path" : "../model/",
-    "trained_model_path" : "../model/checkpoint-4000/trained_model.bin",
 
     "logging_step" : 10,
     "save_step" : 4000,
