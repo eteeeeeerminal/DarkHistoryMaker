@@ -2,3 +2,4 @@
 .vscode
 dataset/data.txt
 *.pyc
+model/*
