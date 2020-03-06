@@ -95,8 +95,9 @@ class Trainer:
             sent_ids = [self.dataset.cls_id, start_char]
             sent_ids = torch.tensor(sent_ids).to(self.device)
             sent = self.model.generate(sent_ids, self.dataset.sep_id)[0]
+            sent = ''.join(self.dataset.ids_to_sent(sent))
             logger.info(f"generate:{sent}")
-            generated_sents.append(''.join(self.dataset.ids_to_sent(sent)))
+            generated_sents.append(sent)
 
         return generated_sents
 
@@ -159,6 +160,7 @@ class Trainer:
                     self.save_model(global_step)
                     self.random_generate()
                     self.model.train()
+
 
         self.save_model(global_step)
 
