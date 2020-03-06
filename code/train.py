@@ -71,7 +71,7 @@ class Trainer:
         model_config.vocab_size = self.dataset.get_vocab_size()
 
         if self.config.trained_model_path is not None:
-            self.model = ReformerGenModel().from_pretrained(self.config.trained_model_path)
+            self.model = ReformerGenModel.from_pretrained(self.config.trained_model_path, model_config, self.device)
         else:
             self.model = ReformerGenModel(model_config)
 
@@ -98,6 +98,7 @@ class Trainer:
             logger.info(f"generate:{sent}")
             generated_sents.append(''.join(self.dataset.ids_to_sent(sent)))
 
+        print(generated_sents)
         return generated_sents
 
     def save_model(self, step):
@@ -154,11 +155,11 @@ class Trainer:
                 if self.config.logging_step > 0 and global_step % self.config.logging_step == 0:
                     self.logging(global_step, tr_loss-logging_loss)
                     logging_loss = tr_loss
-                    self.save_model(global_step)
+                    self.random_generate()
                     self.model.train()
 
                 if self.config.save_step > 0 and global_step % self.config.save_step == 0:
-                    self.random_generate()
+                    self.save_model(global_step)
 
         self.save_model(global_step)
 
@@ -166,4 +167,4 @@ class Trainer:
 if __name__ == "__main__":
     config  = TrainerConfig.from_json("../config/train_config.json")
     trainer = Trainer(config)
-    trainer.train()
+    trainer.random_generate()

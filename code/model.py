@@ -41,9 +41,9 @@ class ReformerGenModel(torch.nn.Module):
         )
 
     @staticmethod
-    def from_pretrained(model_path, config:ReformerGenConfig):
+    def from_pretrained(model_path, config:ReformerGenConfig, device):
         model = ReformerGenModel(config)
-        model.load_state_dict(torch.load(model_path))
+        model.load_state_dict(torch.load(model_path, map_location=device))
         return model
 
     def generate(self, sent_ids:torch.Tensor, eos_id) -> List[int]:
