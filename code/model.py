@@ -37,6 +37,8 @@ class ReformerGenModel(torch.nn.Module):
             causal  = self.config.causal,
             emb_dim = self.config.emb_dim,
 
+            weight_tie = self.config.weight_tie,
+
             full_attn_thres = self.config.full_attn_thres,
         )
 

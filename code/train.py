@@ -95,7 +95,7 @@ class Trainer:
             start_char = random.randrange(self.dataset.mask_id+1, self.dataset.get_vocab_size())
             sent_ids = [self.dataset.cls_id, start_char]
             sent_ids = torch.tensor(sent_ids).to(self.device)
-            sent = self.model_to_gen.generate(sent_ids, self.dataset.sep_id)[0]
+            sent = model_to_gen.generate(sent_ids, self.dataset.sep_id)[0]
             sent = ''.join(self.dataset.ids_to_sent(sent))
             logger.info(f"generate:{sent}")
             generated_sents.append(sent)
