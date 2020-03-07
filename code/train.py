@@ -1,3 +1,4 @@
+import datetime
 import random
 import json
 import os
@@ -128,6 +129,7 @@ class Trainer:
         self.model.train()
 
         logger.info("---- START TRAINING ----")
+        logger.info(f"---- {datetime.datetime.now()} ----")
         for i in range(self.config.epoch):
             logger.info(f"Start epoch:{i}")
             for batch in self.train_dataloader:
@@ -164,6 +166,8 @@ class Trainer:
 
 
         self.save_model(global_step)
+        logger.info("---- FINISH TRAINING ----")
+        logger.info(f"---- {datetime.datetime.now()} ----")
 
 
 if __name__ == "__main__":
