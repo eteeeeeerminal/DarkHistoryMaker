@@ -11,7 +11,7 @@ from torch.optim import AdamW
 from dataset import TextDatasetConfig, DarkHistoryDataset
 from model import ReformerGenConfig, ReformerGenModel
 
-logging.basicConfig(level=logging.DEBUG, filename="0305.log")
+logging.basicConfig(level=logging.DEBUG, filename="0307.log")
 logger = logging.getLogger(__name__)
 
 class TrainerConfig:
@@ -89,12 +89,13 @@ class Trainer:
 
     def random_generate(self, sent_num=5) -> List[str]:
         self.model.eval()
+        model_to_gen = self.model.module if hasattr(self.model, "module") else self.model
         generated_sents = []
         for i in range(sent_num):
             start_char = random.randrange(self.dataset.mask_id+1, self.dataset.get_vocab_size())
             sent_ids = [self.dataset.cls_id, start_char]
             sent_ids = torch.tensor(sent_ids).to(self.device)
-            sent = self.model.generate(sent_ids, self.dataset.sep_id)[0]
+            sent = self.model_to_gen.generate(sent_ids, self.dataset.sep_id)[0]
             sent = ''.join(self.dataset.ids_to_sent(sent))
             logger.info(f"generate:{sent}")
             generated_sents.append(sent)
