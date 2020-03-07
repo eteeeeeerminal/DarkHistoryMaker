@@ -16,6 +16,7 @@ class ReformerGenConfig:
         self.causal  = kwargs.pop("causal ", True)
 
         self.full_attn_thres = kwargs.pop("full_attn_thres", 16)
+        self.weight_tie = kwargs.pop("weight_tie", False)
 
         self.max_position_embeddings = kwargs.pop("max_position_embeddings", 128)
 
