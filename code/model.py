@@ -12,11 +12,14 @@ class ReformerGenConfig:
         self.hidden_size = kwargs.pop("hidden_size", 512)
         self.emb_dim = kwargs.pop("emb_dim", 512)
         self.depth = kwargs.pop("depth", 12)
+        self.heads = kwargs.pop("heads", 8)
 
         self.causal  = kwargs.pop("causal ", True)
 
-        self.full_attn_thres = kwargs.pop("full_attn_thres", 16)
+        self.n_hashes = kwargs.pop("n_hashes", 4)
+
         self.weight_tie = kwargs.pop("weight_tie", False)
+        self.full_attn_thres = kwargs.pop("full_attn_thres", 16)
 
         self.max_position_embeddings = kwargs.pop("max_position_embeddings", 128)
 
@@ -33,10 +36,13 @@ class ReformerGenModel(torch.nn.Module):
             num_tokens = self.config.vocab_size,
             dim = self.config.hidden_size,
             depth = self.config.depth,
+            heads = self.config.heads,
             max_seq_len = self.config.max_position_embeddings,
 
             causal  = self.config.causal,
             emb_dim = self.config.emb_dim,
+
+            n_hashes = self.config.n_hashes,
 
             weight_tie = self.config.weight_tie,
 
@@ -53,7 +59,7 @@ class ReformerGenModel(torch.nn.Module):
         start_len = sent_ids.shape[0]
         sent_ids = sent_ids.unsqueeze(0)
         padding  = torch.zeros(1, self.config.max_position_embeddings, dtype=torch.long, device=sent_ids.device)
-        for i in range(start_len, 50):
+        for i in range(start_len, self.config.max_position_embeddings):
             sent_ids = torch.cat((sent_ids, padding[:, i:]), 1)
             output = self.forward(sent_ids)[0]
             output = output.argmax(dim=-1)
