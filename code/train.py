@@ -90,7 +90,6 @@ class Trainer:
 
     def generate(self, start_sent:str) -> str:
         # 文の続きを生成します。
-        self.model.eval()
         model_to_gen = self.model.module if hasattr(self.model, "module") else self.model
 
         sent_ids = [self.dataset.cls_id] + self.dataset.sent_to_ids(start_sent)
@@ -168,6 +167,7 @@ class Trainer:
 
                 if self.config.save_step > 0 and global_step % self.config.save_step == 0:
                     self.save_model(global_step)
+                    self.model.eval()
                     self.random_generate()
                     self.model.train()
 
