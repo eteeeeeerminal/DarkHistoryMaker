@@ -106,7 +106,7 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         if(id_len < self.min_seq_length*2):
             return ids
 
-        return ids[random.randrange(len(ids)/2):]
+        return ids[random.randrange(int(len(ids)/2)):]
 
     def make_input(self, ids:List[int]) -> torch.Tensor:
         if random.random() < self.shift_prob:
