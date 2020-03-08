@@ -88,16 +88,23 @@ class Trainer:
         if self.config.n_gpu > 0:
             torch.cuda.manual_seed_all(seed)
 
-    def random_generate(self, sent_num=5) -> List[str]:
+    def generate(self, start_sent:str) -> str:
+        # 文の続きを生成します。
         self.model.eval()
         model_to_gen = self.model.module if hasattr(self.model, "module") else self.model
+
+        sent_ids = [self.dataset.cls_id] + self.dataset.sent_to_ids(start_sent)
+        sent_ids = torch.tensor(sent_ids).to(self.device)
+
+        sent = model_to_gen.generate(sent_ids, self.dataset.sep_id)
+        return ''.join(self.dataset.ids_to_sent(sent))
+
+    def random_generate(self, sent_num=5) -> List[str]:
         generated_sents = []
         for i in range(sent_num):
             start_char = random.randrange(self.dataset.mask_id+1, self.dataset.get_vocab_size())
-            sent_ids = [self.dataset.cls_id, start_char]
-            sent_ids = torch.tensor(sent_ids).to(self.device)
-            sent = model_to_gen.generate(sent_ids, self.dataset.sep_id)[0]
-            sent = ''.join(self.dataset.ids_to_sent(sent))
+            start_char = self.dataset.ids_to_sent([start_char])[0]
+            sent = self.generate(start_char)
             logger.info(f"generate:{sent}")
             generated_sents.append(sent)
 
