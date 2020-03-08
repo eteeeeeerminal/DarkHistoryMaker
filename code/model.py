@@ -21,6 +21,8 @@ class ReformerGenConfig:
         self.weight_tie = kwargs.pop("weight_tie", False)
         self.full_attn_thres = kwargs.pop("full_attn_thres", 16)
 
+        self.use_scala_norm = kwargs.pop("use_scala_norm", False)
+
         self.max_position_embeddings = kwargs.pop("max_position_embeddings", 128)
 
     @staticmethod
@@ -47,6 +49,8 @@ class ReformerGenModel(torch.nn.Module):
             weight_tie = self.config.weight_tie,
 
             full_attn_thres = self.config.full_attn_thres,
+
+            use_scale_norm = self.config.use_scala_norm
         )
 
     @staticmethod
@@ -57,17 +61,24 @@ class ReformerGenModel(torch.nn.Module):
 
     def generate(self, sent_ids:torch.Tensor, eos_id) -> List[int]:
         start_len = sent_ids.shape[0]
+        mask = torch.tensor([0]*self.config.max_position_embeddings, dtype=torch.bool, device=sent_ids.device)
+
+        mask = mask.unsqueeze(0)
+        mask[..., 1:start_len] = True
         sent_ids = sent_ids.unsqueeze(0)
+
         padding  = torch.zeros(1, self.config.max_position_embeddings, dtype=torch.long, device=sent_ids.device)
+        sent_ids = torch.cat((sent_ids, padding[:, start_len:]), 1)
+
         for i in range(start_len, self.config.max_position_embeddings):
-            sent_ids = torch.cat((sent_ids, padding[:, i:]), 1)
-            output = self.forward(sent_ids)[0]
+            output = self.forward(sent_ids, input_mask=mask)[0]
             output = output.argmax(dim=-1)
-            sent_ids = torch.cat((sent_ids[:, :i], output[:, i-1:i]), 1)
-            if output[0, i-1:i] == eos_id:
+            sent_ids[..., i] = output[..., i-1]
+            mask[..., i] = True
+            if output[..., i-1] == eos_id:
                 break
 
-        return list(sent_ids)
+        return list(sent_ids.squeeze())
 
     def forward(
         self,
