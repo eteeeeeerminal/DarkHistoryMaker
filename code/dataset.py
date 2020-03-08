@@ -22,6 +22,8 @@ class TextDatasetConfig:
         self.vocab_path = kwargs.pop("vocab_path", "")
         self.input_length = kwargs.pop("input_length", 4096)
         self.max_seq_length = kwargs.pop("max_seq_length", 4094)
+        self.min_seq_length = kwargs.pop("min_seq_length", 1)
+        self.shift_prob = kwargs.pop("shift_prob", 0.3)
         self.is_return_str = kwargs.pop("is_return_str", False)
 
     @staticmethod
@@ -33,6 +35,10 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
     def __init__(self, config:TextDatasetConfig):
         self.block_size     = config.input_length
         self.max_seq_length = config.max_seq_length
+        self.min_seq_length = config.min_seq_length
+
+        self.shift_prob = config.shift_prob
+
         self.is_return_str  = config.is_return_str
 
         self.vocab = {}
@@ -67,6 +73,9 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
             if len(block) > self.max_seq_length:
                 continue
 
+            if len(block) < self.min_seq_length:
+                continue
+
             self.plain_docs.append(block)
             self.docs.append(self.sent_to_ids(block))
 
@@ -88,9 +97,19 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         return [self.vocab.get(char, self.unk_id) for char in sent if not (char == '\n' or char == '\t')]
 
     def ids_to_sent(self, ids:List[int]) -> List[str]:
-        return [self.vocab_ids[word_id] for word_id in ids if 0 <= word_id < self.vocab_size]
+        return [self.vocab_ids[word_id] for word_id in ids if self.mask_id < word_id < self.vocab_size]
+
+    def shift_ids(self, ids:List[int]) -> List[int]:
+        id_len = len(ids)
+        if(id_len < self.min_seq_length*2):
+            return ids
+
+        return ids[random.randrange(len(ids)/2):]
 
     def make_input(self, ids:List[int]) -> torch.Tensor:
+        if random.random() < self.shift_prob:
+            ids = self.shift_ids(ids)
+
         input_mask = [0] + [1]*len(ids) + [0]
 
         input_ids = [self.cls_id] + ids + [self.sep_id]
