@@ -4,5 +4,9 @@
 
     "input_length" : 256,
     "max_seq_length" : 254,
+    "min_seq_length" : 3,
+
+    "shift_prob" : 0.3,
+
     "is_return_str" : false
 }
