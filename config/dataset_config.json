@@ -6,7 +6,7 @@
     "max_seq_length" : 254,
     "min_seq_length" : 5,
 
-    "shift_prob" : 0.1,
+    "shift_prob" : 0.2,
 
     "replace_prob" : 0.2,
     "unk_mask_prob" : 0.3,

@@ -1,7 +1,7 @@
 {
     "hidden_size" : 128,
     "emb_dim" : 128,
-    "depth" : 8,
+    "depth" : 12,
     "heads" : 4,
     "causal" : true,
     "n_hashes" : 4,
