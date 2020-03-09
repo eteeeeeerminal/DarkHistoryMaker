@@ -66,15 +66,19 @@ class Trainer:
                                             shuffle=True,
                                             num_workers=8)
 
-        logger.info("Load Dataset : Complete")
+        logger.info(f"Loaded Dataset")
+        logger.info(f"- dataset_size \t: {len(self.dataset)}")
+        logger.info(f"- vocab_size \t: {self.dataset.get_vocab_size()}")
 
         model_config = ReformerGenConfig.from_json(model_config_path)
         model_config.vocab_size = self.dataset.get_vocab_size()
 
         if self.config.trained_model_path is not None:
             self.model = ReformerGenModel.from_pretrained(self.config.trained_model_path, model_config, self.device)
+            logger.info(f"Loaded Trained Model")
         else:
             self.model = ReformerGenModel(model_config)
+            logger.info(f"Made New Model")
 
         self.model.to(self.device)
 
