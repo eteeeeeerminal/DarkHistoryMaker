@@ -25,7 +25,13 @@ class TextDatasetConfig:
         self.input_length = kwargs.pop("input_length", 4096)
         self.max_seq_length = kwargs.pop("max_seq_length", 4094)
         self.min_seq_length = kwargs.pop("min_seq_length", 1)
-        self.shift_prob = kwargs.pop("shift_prob", 0.3)
+
+        self.shift_prob = kwargs.pop("shift_prob", 0.1)
+
+        self.replace_prob = kwargs.pop("replace_prob", 0.1)
+        self.unk_mask_prob = kwargs.pop("unk_mask_prob", 0.3)
+        self.random_token_prob = kwargs.pop("random_token_prob", 0.7)
+
         self.is_return_str = kwargs.pop("is_return_str", False)
 
     @staticmethod
@@ -40,6 +46,10 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
         self.min_seq_length = config.min_seq_length
 
         self.shift_prob = config.shift_prob
+
+        self.replace_prob = config.replace_prob
+        self.unk_mask_prob = config.unk_mask_prob
+        self.random_token_prob = config.random_token_prob
 
         self.is_return_str  = config.is_return_str
 
@@ -108,6 +118,22 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
 
         return ids[random.randrange(int(len(ids)/2)):]
 
+    def replace_ids(self, ids:torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        labels = ids.clone()
+
+        prob_matrix = torch.full(labels.shape, self.replace_prob)
+
+        masked_indices = torch.bernoulli(prob_matrix).bool()
+
+        indices_replaced = torch.bernoulli(torch.full(labels.shape, self.replace_prob)).bool() & masked_indices
+        ids[indices_replaced] = self.unk_id
+
+        indices_random = torch.bernoulli(torch.full(labels.shape, self.random_token_prob)).bool() & masked_indices
+        random_tokens = torch.randint(self.mask_id+1, self.vocab_size-1, labels.shape, dtype=torch.long)
+        ids[indices_random] = random_tokens[indices_random]
+
+        return ids, labels
+
     def make_input(self, ids:List[int]) -> torch.Tensor:
         if random.random() < self.shift_prob:
             ids = self.shift_ids(ids)
@@ -132,7 +158,10 @@ class DarkHistoryDataset(torch.utils.data.Dataset):
 
         input_ids, input_mask = self.make_input(ids)
 
+        input_ids, labels = self.replace_ids(input_ids)
+
         output = {  "input_ids"  : input_ids,
+                    "labels"     : labels,
                     "input_mask" : input_mask, }
 
         if self.is_return_str:

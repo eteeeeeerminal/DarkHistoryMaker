@@ -4,9 +4,13 @@
 
     "input_length" : 256,
     "max_seq_length" : 254,
-    "min_seq_length" : 3,
+    "min_seq_length" : 5,
 
-    "shift_prob" : 0.3,
+    "shift_prob" : 0.1,
+
+    "replace_prob" : 0.2,
+    "unk_mask_prob" : 0.3,
+    "random_token_prob" : 0.7,
 
     "is_return_str" : false
 }
