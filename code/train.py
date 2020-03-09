@@ -12,7 +12,7 @@ from torch.optim import AdamW
 from dataset import TextDatasetConfig, DarkHistoryDataset
 from model import ReformerGenConfig, ReformerGenModel
 
-logging.basicConfig(level=logging.DEBUG, filename="0307.log")
+logging.basicConfig(level=logging.DEBUG, filename=f"{datetime.date.today()}.log")
 logger = logging.getLogger(__name__)
 
 class TrainerConfig:
@@ -141,9 +141,10 @@ class Trainer:
             for batch in self.train_dataloader:
                 try:
                     inputs = batch["input_ids"].to(self.device)
+                    labels = batch["labels"].to(self.device)
                     mask = batch["input_mask"].to(self.device)
 
-                    loss = self.model(inputs, input_mask=mask, lm_labels=inputs)[0]
+                    loss = self.model(inputs, input_mask=mask, lm_labels=labels)[0]
 
                     if self.config.n_gpu > 1:
                         loss = loss.mean()
