@@ -8,7 +8,7 @@
 
     "shift_prob" : 0.2,
 
-    "replace_prob" : 0.2,
+    "replace_prob" : 0.1,
     "unk_mask_prob" : 0.3,
     "random_token_prob" : 0.7,
 
