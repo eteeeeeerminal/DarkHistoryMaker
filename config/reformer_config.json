@@ -1,10 +1,10 @@
 {
-    "hidden_size" : 256,
+    "hidden_size" : 128,
     "emb_dim" : 128,
-    "depth" : 8,
+    "depth" : 12,
     "heads" : 4,
     "causal" : true,
-    "n_hashes" : 4,
+    "n_hashes" : 8,
     "weight_tie" : true,
     "full_attn_thres" : 0,
     "use_scale_norm" : true,

@@ -6,11 +6,11 @@
     "max_seq_length" : 254,
     "min_seq_length" : 5,
 
-    "shift_prob" : 0.2,
+    "shift_prob" : 0.1,
 
     "replace_prob" : 0.1,
-    "unk_mask_prob" : 0.3,
-    "random_token_prob" : 0.7,
+    "unk_mask_prob" : 0.2,
+    "random_token_prob" : 0.5,
 
     "is_return_str" : false
 }
