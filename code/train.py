@@ -92,6 +92,9 @@ class Trainer:
         if self.config.n_gpu > 0:
             torch.cuda.manual_seed_all(seed)
 
+    def eval(self):
+        self.model.eval()
+
     def generate(self, start_sent:str) -> str:
         # 文の続きを生成します。
         model_to_gen = self.model.module if hasattr(self.model, "module") else self.model

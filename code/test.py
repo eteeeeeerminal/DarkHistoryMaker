@@ -10,6 +10,7 @@ def main_loop(trainer):
 if __name__ == '__main__':
     config  = TrainerConfig.from_json("../config/train_config.json")
     trainer = Trainer(config)
+    trainer.eval()
 
     while True:
         main_loop(trainer)
